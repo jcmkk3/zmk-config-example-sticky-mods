@@ -1,0 +1,81 @@
+/*
+ * Copyright (c) 2023 The ZMK Contributors
+ *
+ * SPDX-License-Identifier: MIT
+ */
+
+#include <behaviors.dtsi>
+#include <dt-bindings/zmk/keys.h>
+
+#define DEF_L 0
+#define SYM_L 1
+#define NAV_L 2
+#define NUM_L 3
+
+/ {
+    behaviors {
+        lsk: lazy_sticky_key {
+            compatible = "zmk,behavior-sticky-key";
+            label = "LAZY_STICKY_KEY";
+            #binding-cells = <1>;
+            bindings = <&kp>;
+            release-after-ms = <3000>;
+            quick-release;
+            ignore-modifiers;
+            lazy;
+        };
+
+        sm: sticky_mod {
+            compatible = "zmk,behavior-hold-tap";
+            label = "STICKY_MOD";
+            #binding-cells = <2>;
+            bindings = <&kp>, <&lsk>;
+            flavor = "balanced";
+            hold-while-undecided;
+        };
+    };
+
+    conditional_layers {
+        compatible = "zmk,conditional-layers";
+        tri_layer {
+            if-layers = <NAV_L SYM_L>;
+            then-layer = <NUM_L>;
+        };
+    };
+
+    keymap {
+        compatible = "zmk,keymap";
+        default_layer {
+            bindings = <
+                &kp Q     &kp W     &kp F     &kp P     &kp G          &kp J     &kp L     &kp U     &kp Y     &kp QUOT
+                &kp A     &kp R     &kp S     &kp T     &kp D          &kp H     &kp N     &kp E     &kp I     &kp O
+                &kp Z     &kp X     &kp C     &kp V     &kp B          &kp K     &kp M     &kp COMMA &kp DOT   &kp SEMI
+                                              &mo NAV_L &kp LSHFT      &kp SPACE &mo SYM_L
+            >;
+        };
+        symbol_layer {
+            bindings = <
+                &kp ESC   &kp LBKT  &kp LBRC  &kp LPAR  &kp TILDE      &kp CARET &kp RPAR  &kp RBRC  &kp RBKT  &kp GRAVE
+                &kp MINUS &kp ASTRK &kp EQUAL &kp UNDER &kp DLLR       &kp POUND &sm LGUI  &sm LALT  &sm LCTRL &sm LSHFT
+                &kp PLUS  &kp PIPE  &kp AT    &kp FSLH  &kp PRCNT      &none     &kp BSLH  &kp AMPS  &kp QMARK &kp EXCL
+                                              &trans    &trans         &trans    &trans
+            >;
+        };
+        navigation_layer {
+            bindings = <
+                &kp TAB   &none     &none     &none     &none          &none     &kp HOME  &kp UP    &kp END   &kp DEL
+                &sm LSHFT &sm LCTRL &sm LALT  &sm LGUI  &none          &kp CAPS  &kp LEFT  &kp DOWN  &kp RIGHT &kp BSPC
+                &none     &none     &none     &none     &none          &none     &kp PG_DN &kp PG_UP &none     &kp ENTER
+                                              &trans    &trans         &trans    &trans
+            >;
+        };
+        number_layer {
+            bindings = <
+                &kp 7     &kp 5     &kp 3     &kp 1     &kp 9          &kp 8     &kp 0     &kp 2     &kp 4     &kp 6
+                &sm LSHFT &sm LCTRL &sm LALT  &sm LGUI  &kp F11        &kp F10   &sm LGUI  &sm LALT  &sm LCTRL &sm LSHFT
+                &kp F7    &kp F5    &kp F3    &kp F1    &kp F9         &kp F8    &kp F0    &kp F2    &kp F4    &kp F6
+                                              &trans    &trans         &trans    &trans
+            >;
+        };
+    };
+};
